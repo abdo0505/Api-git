@@ -3,7 +3,7 @@ import fetch from 'node-fetch'
 const handler = async (m, { text, args, usedPrefix, command }) => {
   try {
     if (!text) {
-      throw `Gunakan contoh *${usedPrefix}simi halo*\nJika Simi tidak merespon, coba *${usedPrefix + command}2 halo Simi*`;
+      throw `هذا هو البوت زيزو احذر من فهو يسب كثيرا مثال : *${usedPrefix}zizo كيف حال امك*;
     }
 
     // Updated API endpoint and method
@@ -12,7 +12,7 @@ const handler = async (m, { text, args, usedPrefix, command }) => {
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `text=${encodeURIComponent(text)}&lc=${lang}&key=`,
+      body: `text=${encodeURIComponent(text)}&lc=ar&key=`,
     });
 
     if (!response.ok) {
@@ -20,16 +20,16 @@ const handler = async (m, { text, args, usedPrefix, command }) => {
     }
 
     const data = await response.json();
-    const simiMessage = data.message || 'Gagal mendapatkan respons dari Simi';
+    const simiMessage = data.message || 'خطا';
     m.reply(simiMessage);
   } catch (error) {
     console.error('Error:', error);
-    m.reply(text ? 'Gagal mengambil data.' : error);
+    m.reply(text ? 'حاول مجددا.' : error);
   }
 }
 
-handler.command = ['simi']
+handler.command = ['zizo']
 handler.tags = ['fun']
-handler.help = ['simi']
+handler.help = ['zizo']
 
 export default handler
