@@ -12,7 +12,7 @@ const handler = async (m, { text, args, usedPrefix, command }) => {
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `text=${encodeURIComponent(text)}&lc=${lang}&key=`,
+      body: `text=${encodeURIComponent(text)}&lc=ar&key=`,
     });
 
     if (!response.ok) {
