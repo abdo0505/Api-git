@@ -1,50 +1,90 @@
-import ytdl from 'ytdl-core';
-import fs from 'fs';
+import yts from 'yt-search'
+import fs from 'fs'
+import os from 'os'
+import axios from 'axios'
 
-const handler = async (m, {conn, args, isPrems, isOwner, command}) => {
-  const getRandom = (ext) => {
-    return `${Math.floor(Math.random() * 10000)}${ext}`;
-  };
-  if (args.length === 0) {
-    m.reply(`*[❗] يرجى إدخال رابط الفيديو المراد تنزيله.*`);
-    return;
-  }
+const handler = async (m, { conn, command, text, usedPrefix }) => {
+  if (!text) throw `مثال ${usedPrefix}${command} <الاسم>`;
+
+  // Pencarian video berdasarkan query text
+  const search = await yts(text);
+  const vid = search.videos[Math.floor(Math.random() * search.videos.length)];
+  if (!vid) throw 'Video not found, try another title';
+
+  const { title, thumbnail, timestamp, views, ago, url } = vid;
+
+  // Mengirim pesan awal dengan thumbnail
+  await conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: 'Please wait...' }, { quoted: m });
+
   try {
-    const urlYt = args[0];
-    if (!urlYt.startsWith('http')) {
-      m.reply(`*[❗] يرجى إدخال رابط صحيح لفيديو YouTube.*`);
-      return;
-    }
-    const infoYt = await ytdl.getInfo(urlYt);
-    const titleYt = infoYt.videoDetails.title;
-    const randomName = getRandom('.mp4');
-    const stream = ytdl(urlYt, {filter: (info) => info.itag == 22 || info.itag == 18}).pipe(fs.createWriteStream(`./tmp/${randomName}`));
-    m.reply(global.wait);
-    // console.log("Descargando ->", urlYt);
-    await new Promise((resolve, reject) => {
-      stream.on('error', reject);
-      stream.on('finish', resolve);
+    // Mendapatkan URL audio menggunakan API ryzendesu
+    const response = await axios.get(`https://api.ryzendesu.vip/api/downloader/ytmp3?url=${encodeURIComponent(url)}`);
+    const downloadUrl = response.data.url;
+
+    if (!downloadUrl) throw new Error('Audio URL not found');
+
+    // Lokasi file sementara
+    const tmpDir = os.tmpdir();
+    const filePath = `${tmpDir}/${title}.mp3`;
+
+    // Mengunduh file audio dan menyimpannya di direktori sementara
+    const audioResponse = await axios({
+      method: 'get',
+      url: downloadUrl,
+      responseType: 'stream',
     });
-    const stats = fs.statSync(`./tmp/${randomName}`);
-    const fileSizeInBytes = stats.size;
-    const fileSizeInMegabytes = fileSizeInBytes / (1024 * 1024);
-    // console.log("Tamaño del video: " + fileSizeInMegabytes);
-    if (fileSizeInMegabytes <= 999) {
-      if (command == 'ytshort') {
-        conn.sendMessage( m.chat, {video: fs.readFileSync(`./tmp/${randomName}`), fileName: `${titleYt}.mp4`, mimetype: 'video/mp4'}, {quoted: m});
-      } else {
-        conn.sendMessage( m.chat, {document: fs.readFileSync(`./tmp/${randomName}`), fileName: `${titleYt}.mp4`, mimetype: 'video/mp4'}, {quoted: m});
-      }
-    } else {
-      m.reply(`*[❗] حجم الفيديو أكبر من 999 ميجابايت ولا يمكن رفعه.*`);
-    }
-    fs.unlinkSync(`./tmp/${randomName}`);
-  } catch (e) {
-    m.reply(e.toString());
+
+    const writableStream = fs.createWriteStream(filePath);
+    audioResponse.data.pipe(writableStream);
+
+    writableStream.on('finish', async () => {
+      // Mengirim file audio
+      await conn.sendMessage(m.chat, {
+        audio: {
+          url: filePath
+        },
+        mimetype: 'audio/mpeg',
+        fileName: `${title}.mp3`,
+        caption: `Title: ${title}\nLength: ${timestamp}\nViews: ${views}\nUploaded: ${ago}`,
+        contextInfo: {
+          externalAdReply: {
+            showAdAttribution: true,
+            mediaType: 2,
+            mediaUrl: url,
+            title: title,
+            body: 'Audio Download',
+            sourceUrl: url,
+            thumbnail: await (await conn.getFile(thumbnail)).data,
+          },
+        },
+      }, { quoted: m });
+
+      // Menghapus file setelah dikirim
+      fs.unlink(filePath, (err) => {
+        if (err) {
+          console.error(`Failed to delete audio file: ${err}`);
+        } else {
+          console.log(`Deleted audio file: ${filePath}`);
+        }
+      });
+    });
+
+    writableStream.on('error', (err) => {
+      console.error(`Failed to write audio file: ${err}`);
+      m.reply('Failed to download audio');
+    });
+  } catch (error) {
+    console.error('Error:', error.message);
+    throw `Error: ${error.message}. Please check the URL and try again.`;
   }
 };
-handler.help = ['ytd'];
+
+handler.help = ['play'].map((v) => v + ' <اسم الاغنية>');
 handler.tags = ['downloader'];
-handler.command = ['يوتشورت', 'documentvid', 'videodocumento', 'يوتيوب-شورت'];
-handler.exp = 3;
-export default handler;
+handler.command = /^(play)$/i;
+
+handler.limit = 8
+handler.register = true
+handler.disable = false
+
+export default handler
