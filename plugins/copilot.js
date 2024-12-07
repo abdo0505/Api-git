@@ -12,7 +12,7 @@ let handler = async (_0x2206d0, {
   } else if (_0x2206d0.quoted && _0x2206d0.quoted.text) {
     _0x3b309f = _0x2206d0.quoted.text;
   } else {
-    throw "هذا الامر خاص بالذكاء الاصطناعي الخاص ب ميكروسوفت مثال: \n *.microsoft* do you know some thing about The Monalisa?.";
+    throw "هذا الامر خاص بالذكاء الاصطناعي الخاص ب كوبيلوت مثال: \n *.copilot* do you know some thing about The Monalisa?.";
   }
   let _0xcb550a = _0x2206d0.quoted ? _0x2206d0.quoted : _0x2206d0;
   let _0x5ec4c2 = (_0xcb550a.msg || _0xcb550a).mimetype || "";
