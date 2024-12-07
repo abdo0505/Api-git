@@ -45,7 +45,7 @@ handler.all = async function (_0x439f91) {
     const _0x21b246 = {
       newsletterJid: "120363372688988248@newsletter",
       serverMessageId: 103,
-      newsletterName: "💫 ping : " + _0xfd7158 + "   © [ اضغط هنا ]    "
+      newsletterName: "قناة البوت "
     };
     global.adReply = {
       contextInfo: {
