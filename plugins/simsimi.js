@@ -16,7 +16,7 @@ const handler = async (m, { text, args, usedPrefix, command }) => {
     });
 
     if (!response.ok) {
-      throw 'Gagal mengambil data.';
+      throw 'error.';
     }
 
     const data = await response.json();
