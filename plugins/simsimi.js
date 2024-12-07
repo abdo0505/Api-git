@@ -1,35 +1,30 @@
-import fetch from 'node-fetch'
-
-const handler = async (m, { text, args, usedPrefix, command }) => {
+import translate from '@vitalets/google-translate-api';
+import fetch from 'node-fetch';
+const handler = async (m, {text, command, args, usedPrefix}) => {
+  if (!text) throw `*[❗] , هل تريد الدردشة؟ قم بالرد بـ*\n\n*مثال: ${usedPrefix + command} مرحبًا بوت*`;
   try {
-    if (!text) {
-      throw `Gunakan contoh *${usedPrefix}simi halo*\nJika Simi tidak merespon, coba *${usedPrefix + command}2 halo Simi*`;
+    const api = await fetch('https://api.simsimi.net/v2/?text=' + text + '&lc=ar');
+    const resSimi = await api.json();
+    m.reply(resSimi.success);
+  } catch {
+    try {
+      if (text.includes('اهلا')) text = text.replace('اهلا', 'مرحبا');
+      if (text.includes('اهلا')) text = text.replace('اهلا', 'مرحبا');
+      if (text.includes('اهلا')) text = text.replace('اهلا', 'مرحبا');
+      const reis = await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q=' + text);
+      const resu = await reis.json();
+      const nama = m.pushName || '1';
+      const api = await fetch('http://api.brainshop.ai/get?bid=153868&key=rcKonOgrUFmn5usX&uid=' + nama + '&msg=' + resu[0][0][0]);
+      const res = await api.json();
+      const reis2 = await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=ar&dt=t&q=' + res.cnt);
+      const resu2 = await reis2.json();
+      m.reply(resu2[0][0][0]);
+    } catch {
+      throw `*[❗] حدث خطأ، يرجى المحاولة مرة أخرى*`;
     }
-
-    // Updated API endpoint and method
-    const url = 'https://api.simsimi.vn/v1/simtalk';
-    const lang = 'id'; // specify your desired language code
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: `text=${encodeURIComponent(text)}&lc=ar&key=`,
-    });
-
-    if (!response.ok) {
-      throw 'Gagal mengambil data.';
-    }
-
-    const data = await response.json();
-    const simiMessage = data.message || 'Gagal mendapatkan respons dari Simi';
-    m.reply(simiMessage);
-  } catch (error) {
-    console.error('Error:', error);
-    m.reply(text ? 'Gagal mengambil data.' : error);
   }
-}
-
-handler.command = ['simi']
-handler.tags = ['fun']
-handler.help = ['simi']
-
-export default handler
+};
+handler.help = ['simi', 'bot'].map((v) => v + ' <teks>');
+handler.tags = ['fun'];
+handler.command = /^((sim)?simi|bot|سمسم|زورو2)$/i;
+export default handler;
