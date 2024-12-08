@@ -6,7 +6,7 @@ import _0x1b5e8d from "performance-now";
 let handler = _0x32f7bd => _0x32f7bd;
 handler.all = async function (_0x439f91) {
   let _0x34efe9 = await conn.getName(_0x439f91.sender);
-  let _0x1a118f = "https://i.ibb.co/wMdhHsw/12cefc4e9ec1bba6fb1a315c30ebf938.jpg";
+  let _0x1a118f = "https://i.ibb.co/XbvXSnZ/IMG-20241208-114456.jpg";
   let _0x19667c = "https://i.ibb.co/wMdhHsw/12cefc4e9ec1bba6fb1a315c30ebf938.jpg";
   try {
     _0x1a118f = await this.profilePictureUrl(_0x439f91.sender, "image");
@@ -43,9 +43,9 @@ handler.all = async function (_0x439f91) {
     global.ucapan = ucapan();
     global.botdate = date();
     const _0x21b246 = {
-      newsletterJid: "120363372688988248@newsletter",
+      newsletterJid: "120363307350192041@newsletter",
       serverMessageId: 103,
-      newsletterName: "قناة البوت "
+      newsletterName: "اضغط هنا لمتابعة قناة البوت ✨"
     };
     global.adReply = {
       contextInfo: {
@@ -58,7 +58,7 @@ handler.all = async function (_0x439f91) {
           body: ucapan(),
           previewType: "VIDEO",
           thumbnailUrl: "https://i.ibb.co/wMdhHsw/12cefc4e9ec1bba6fb1a315c30ebf938.jpg",
-          sourceUrl: "https://instagram.com/ayoub.eeea"
+          sourceUrl: "https://whatsapp.com/channel/0029VayqYQDBVJl5mVZsit1G"
         }
       }
     };
