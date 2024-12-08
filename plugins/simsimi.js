@@ -1,30 +1,38 @@
-import translate from '@vitalets/google-translate-api';
 import fetch from 'node-fetch';
-const handler = async (m, {text, command, args, usedPrefix}) => {
-  if (!text) throw `*[❗] , هل تريد الدردشة؟ قم بالرد بـ*\n\n*مثال: ${usedPrefix + command} مرحبًا بوت*`;
-  try {
-    const api = await fetch('https://api.simsimi.net/v2/?text=' + text + '&lc=ar');
-    const resSimi = await api.json();
-    m.reply(resSimi.success);
-  } catch {
-    try {
-      if (text.includes('اهلا')) text = text.replace('اهلا', 'مرحبا');
-      if (text.includes('اهلا')) text = text.replace('اهلا', 'مرحبا');
-      if (text.includes('اهلا')) text = text.replace('اهلا', 'مرحبا');
-      const reis = await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q=' + text);
-      const resu = await reis.json();
-      const nama = m.pushName || '1';
-      const api = await fetch('http://api.brainshop.ai/get?bid=153868&key=rcKonOgrUFmn5usX&uid=' + nama + '&msg=' + resu[0][0][0]);
-      const res = await api.json();
-      const reis2 = await fetch('https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=ar&dt=t&q=' + res.cnt);
-      const resu2 = await reis2.json();
-      m.reply(resu2[0][0][0]);
-    } catch {
-      throw `*[❗] حدث خطأ، يرجى المحاولة مرة أخرى*`;
+
+let handler = async (m, { conn, text, usedPrefix, command }) => {
+  const name = conn.getName(m.sender);
+  if (!text) {
+    throw ` هلا يا *${name}*, هل تريد التحدث ؟ رد مع *${usedPrefix + command}* (رسالتك)\n\n📌 مثال: *${usedPrefix + command}* هلا كيفك`;
+  }
+
+  const options = {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: `text=${encodeURIComponent(text)}&lc=ar&key=`
+  };
+
+  const res = await fetch('https://api.simsimi.vn/v1/simtalk', options);
+  const json = await res.json();
+
+  if (json.status === '200') {
+    const reply = json.message;
+
+    // Check if SimSimi is requesting to be taught
+    if (reply.includes("Teach me")) {
+      throw `هلا *${name}*, يبدو أن SimSimi يرغب في أن تعلمه!`;
     }
+
+    m.reply(reply);
+  } else {
+    throw json.message; // Only throw the 'message' field as an error
   }
 };
-handler.help = ['simi', 'bot'].map((v) => v + ' <teks>');
+
+handler.help = ['bot'];
 handler.tags = ['fun'];
-handler.command = /^((sim)?simi|bot|سمسم|زورو2)$/i;
+handler.command = ['سمسم'];
+handler.owner = false;
+
+
 export default handler;
