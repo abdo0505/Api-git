@@ -7,7 +7,7 @@ import _0x5dad2e from "moment-timezone";
 import _0x381d3c from "os";
 import _0xc5c478 from "fs";
 const defaultMenu = {
-  before: "\n> *ʜɪ ɪᴛs ᴍᴇ ᴊᴇᴇɴ-ᴍᴅ ɪ ᴀᴍ ᴀ ᴡʜᴀᴛsᴀᴘᴘ ʙᴏᴛ ᴄʀᴇᴀᴛᴇᴅ ʙʏ 𝐀𝐁𝐃𝐎 𝐓𝐄𝐂𝐇 𝚊𝚗𝚍 ᴀʏᴏᴜʙ-ᴅᴇv*\n\n> ▧ Salam : %name\n> ▧ Uptime : %muptime\n\n%readmore".trimStart(),
+  before: "\n> *ʜɪ ɪᴛs ᴍᴇ ᴊᴇᴇɴ-ᴍᴅ ɪ ᴀᴍ ᴀ ᴡʜᴀᴛsᴀᴘᴘ ʙᴏᴛ ᴄʀᴇᴀᴛᴇᴅ ʙʏ 𝐀𝐁𝐃𝐎 𝐓𝐄𝐂𝐇 𝚊𝚗𝚍 ᴀʏᴏᴜʙ-ᴅᴇʙ*\n\n> ▧ Salam : %name\n> ▧ Uptime : %muptime\n\n%readmore".trimStart(),
   header: "❏┄┅━┅┄〈 〘 *%category* 〙\n│",
   body: "┊▧ %cmd %islimit %isPremium",
   footer: "│\n┗━═┅═━━┅┄๑\n",
@@ -25,7 +25,7 @@ let handler = async (_0x133891, {
 }) => {
   let _0x18128a;
   let _0xaac27 = ("" + _0x3a928b[0]).toLowerCase();
-  let _0x3e25d1 = ["all", "drawing", "ai", "downloader", "image-edit", "sticker", "search", "tools", "infobot", "owner"];
+  let _0x3e25d1 = ["all", "drawing", "ai", "downloader", "image-edit", "sticker", "search", "fun", "tools", "infobot", "owner"];
   if (!_0x3e25d1.includes(_0xaac27)) {
     _0xaac27 = "404";
   }
@@ -37,6 +37,7 @@ let handler = async (_0x133891, {
       "image-edit": "image-edit",
       sticker: "sticker",
       search: "search",
+      fun: "fun",
       tools: "tools",
       owner: "owner",
       infobot: "infobot"
@@ -75,6 +76,11 @@ let handler = async (_0x133891, {
   if (_0xaac27 == "tools") {
     _0x18128a = {
       tools: "Tools"
+    };
+  }
+  if (_0xaac27 == "fun") {
+    _0x18128a = {
+      fun: "Fun"
     };
   }
   if (_0xaac27 == "owner") {
@@ -139,7 +145,7 @@ let handler = async (_0x133891, {
   let _0x2f985a = clockString(_0x5b4c28);
   let _0x2d8e48 = Object.keys(global.db.data.users).length;
   let _0xf6c410 = Object.values(global.db.data.users).filter(_0x3ef0a1 => _0x3ef0a1.registered == true).length;
-  let _0x26db11 = ("\n> ʜɪ ɪᴛs ᴍᴇ ᴊᴇᴇɴ-ᴍᴅ ɪ ᴀᴍ ᴀ ᴡʜᴀᴛsᴀᴘᴘ ʙᴏᴛ ᴄʀᴇᴀᴛᴇᴅ ʙʏ 𝐀𝐁𝐃𝐎 𝐓𝐄𝐂𝐇 𝚊𝚗𝚍 ᴀʏᴏᴜʙ-ᴅᴇv\n\n\n> ▧ مدة البوو : " + _0x28d784 + "\n").trimStart();
+  let _0x26db11 = ("\n>ʜɪ ɪᴛs ᴍᴇ ᴊᴇᴇɴ-ᴍᴅ ɪ ᴀᴍ ᴀ ᴡʜᴀᴛsᴀᴘᴘ ʙᴏᴛ ᴄʀᴇᴀᴛᴇᴅ ʙʏ 𝐀𝐁𝐃𝐎 𝐓𝐄𝐂𝐇 𝚊𝚗𝚍 ᴀʏᴏᴜʙ-ᴅᴇv\n\n\n> ▧ Uptime : " + _0x28d784 + "\n").trimStart();
   let _0x50a3b5 = [];
   for (let _0xe43987 = 0; _0xe43987 < _0x3e25d1.length; _0xe43987++) {
     let _0x50a550 = {
@@ -150,10 +156,10 @@ let handler = async (_0x133891, {
     _0x50a3b5.push(_0x50a550);
   }
   const _0x59629b = {
-    title: "اضغط هنا ",
+    title: "إضغط هنا ",
     sections: [{
-      title: "Bot Menu",
-      highlight_label: "Hot",
+      title: "List Menu",
+      highlight_label: "Popular",
       rows: _0x50a3b5
     }]
   };
@@ -296,4 +302,4 @@ function clockString(_0x57fb3b) {
 }
 function capitalize(_0xd1d8f7) {
   return _0xd1d8f7.charAt(0).toUpperCase() + _0xd1d8f7.substr(1);
-    }
+}
