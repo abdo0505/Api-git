@@ -5,7 +5,7 @@ import fetch from 'node-fetch'
 import { youtubedl } from '../lib/youtube.js'
 
 var handler = async (m, { conn, command, text, usedPrefix }) => {
-  if (!text) throw `Use example ${usedPrefix}${command} 7!! Orange`;
+  if (!text) throw `مثال ${usedPrefix}${command} automovito mamgos`;
 
   let search = await yts(text);
   let vid = search.videos[Math.floor(Math.random() * search.videos.length)];
