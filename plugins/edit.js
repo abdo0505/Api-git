@@ -10,7 +10,7 @@ let handler = async (m, { conn, usedPrefix, command }) => {
                 }
 
                 handler.help = ['edit']
-                handler.tags = ['anime']
+                handler.tags = ['tools']
                 handler.command = /^(اديت|ايديت|edit)$/i
                 handler.limit = false
 
