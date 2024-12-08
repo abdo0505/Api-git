@@ -29,8 +29,8 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   }
 };
 
-handler.help = ['bot'];
-handler.tags = ['fun'];
+handler.help = ['zizo'];
+handler.tags = ['tools'];
 handler.command = ['zizo'];
 handler.owner = false;
 
