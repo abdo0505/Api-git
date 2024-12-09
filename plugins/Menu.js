@@ -4,7 +4,7 @@ import jimp from 'jimp'
 import PhoneNumber from 'awesome-phonenumber'
 import fetch from 'node-fetch'
 import { xpRange } from '../lib/levelling.js'
-import pkg from '@whiskeysockets/baileys';
+import pkg from '@adiwajshing/baileys-md';
 const { generateWAMessageFromContent, proto, prepareWAMessageMedia } = pkg;
 let tags = {
 }
