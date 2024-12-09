@@ -31,8 +31,8 @@ let handler = async m => {
   } else throw '*اسم الاغنية غير صحيح*';
 };
 
-handler.help = ['play'];
-handler.tags = ['downloader'];
-handler.command = /^play$/i;
+handler.help = ['shazam'];
+handler.tags = ['tools'];
+handler.command = /^shazam$/i;
 
 export default handler;
