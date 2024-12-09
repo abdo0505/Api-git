@@ -1,26 +1,36 @@
-import { promises } from 'fs'
-import { join } from 'path'
-import jimp from 'jimp'
+import { generateWAMessageFromContent } from '@adiwajshing/baileys'
+import os from 'os'
 import PhoneNumber from 'awesome-phonenumber'
-import fetch from 'node-fetch'
-import { xpRange } from '../lib/levelling.js'
-import pkg from '@adiwajshing/baileys-md';
-const { generateWAMessageFromContent, proto, prepareWAMessageMedia } = pkg;
-let tags = {
-}
-const defaultMenu = {
-  before: 'Hi, %name 👋\n\n> Date: %date\n> Time: %time WIB\n> Runtime: %uptime\n%readmore',
-  header: '┏━━⊜ *_%category_* ━⊜',
-  body: '┃⋄ %cmd %islimit %isPremium',
-  footer: '┗━━━━━━━━🥀\n',
-  after: '',
 
-}
 let handler = async (m, { conn, usedPrefix: _p }) => {
+
+  let user = `@${m.sender.split('@')[0]}`
+    
+  
+let tags = {}
+const defaultMenu = {
+  before: `
+*_乂 Jeen MD - bot_*
+
+
+*_あ Library : [ jeen-Baileys ]_*
+*_あ Prefix : [ %_p ]_*
+*_あ Platform : [ jeen-hosting ]_*
+*_あ Uptime : [ %muptime ]_*
+*_あ Date : [ %date ]_*
+*_あ Database : [ %totalreg ]_*
+
+%readmore
+`.trimStart(),
+  header: '╭┉┉┉≻ *“%category”* ≺┉┉┉',
+  body: `┆ \t ➦ _%cmd%islimit%isPremium_ `,
+  footer: '┆',
+  after: `╰┉┉┉≻\t _© ${conn.user.name}_ \t`,
+}
   try {
     let name = m.pushName || conn.getName(m.sender)
     let d = new Date(new Date + 3600000)
-    let locale = 'id'
+    let locale = 'en'
     // d.getTimeZoneOffset()
     // Offset -420 is 18.00
     // Offset    0 is  0.00
@@ -31,8 +41,17 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
       year: 'numeric',
       timeZone: 'Africa/Casablanca'
     })
-    let time = d.toLocaleTimeString(locale, { timeZone: 'Africa/Casablanca' })
+    let time = d.toLocaleTimeString(locale, { timeZone: 'Asia/Kolkata' })
     time = time.replace(/[.]/g, ':')
+    let _muptime
+    if (process.send) {
+      process.send('uptime')
+      _muptime = await new Promise(resolve => {
+        process.once('message', resolve)
+        setTimeout(resolve, 1000)
+      }) * 1000
+    }
+    
     let _uptime
     if (process.send) {
       process.send('uptime')
@@ -41,6 +60,10 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
         setTimeout(resolve, 1000)
       }) * 1000
     }
+
+    let totalreg = Object.keys(global.db.data.users).length
+    let platform = os.platform()
+    let muptime = clockString(_muptime)
     let uptime = clockString(_uptime)
     let help = Object.values(global.plugins).filter(plugin => !plugin.disabled).map(plugin => {
       return {
@@ -82,52 +105,57 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
     let text = typeof conn.menu == 'string' ? conn.menu : typeof conn.menu == 'object' ? _text : ''
     let replace = {
       '%': '%',
-      p: _p, uptime,
+      p: _p, uptime, muptime,
       me: conn.getName(conn.user.jid),
-      name, date, time,
+      name, date, time, platform, _p, totalreg,
       readmore: readMore
     }
     text = text.replace(new RegExp(`%(${Object.keys(replace).sort((a, b) => b.length - a.length).join`|`})`, 'g'), (_, name) => '' + replace[name])
 
-    //let buffer = await genProfile(conn, m)
-    const pp = await conn.profilePictureUrl(conn.user.jid, 'image').catch(_ => './src/avatar_contact.png');
-    //conn.sendFile(m.chat, pp, 'menu.jpg', text.trim(), m, null)
-    const interactiveMessage = {
-        body: { text: text.trim() },
-        footer: { text: "_By JeenTeam_" },
-        header: {
-        hasMediaAttachment: true,...(await prepareWAMessageMedia({ image: { url: pp } }, { upload: conn.waUploadToServer }))
-        },
-        contextInfo: { 
-          	mentionedJid: [m.sender], 
-        	isForwarded: true, 
-	        forwardedNewsletterMessageInfo: {
-			newsletterJid: '120363307350192041@newsletter',
-			newsletterName: "Jeen ai", 
-			serverMessageId: -1
-		}
-          },
-        nativeFlowMessage: { 
-            buttons: [{ 
-                name: "cta_url",
-                buttonParamsJson: `{"display_text":"عرض القناة","url":"https://whatsapp.com/channel/0029Valkz9f2P59m5mtUqA1j"}`
-            }]
-        }
-    };
+const vi = ['https://i.ibb.co/XbvXSnZ/IMG-20241208-114456.jpg',
+'https://i.ibb.co/XbvXSnZ/IMG-20241208-114456.jpg',
+'https://i.ibb.co/XbvXSnZ/IMG-20241208-114456.jpg', 'https://i.ibb.co/XbvXSnZ/IMG-20241208-114456.jpg',     'https://i.ibb.co/XbvXSnZ/IMG-20241208-114456.jpg', 'https://i.ibb.co/XbvXSnZ/IMG-20241208-114456.jpg',     'https://i.ibb.co/XbvXSnZ/IMG-20241208-114456.jpg']
 
-    const message = { 
-        messageContextInfo: { deviceListMetadata: {}, deviceListMetadataVersion: 2 }, 
-        interactiveMessage 
-    };
+var vid = vi[Math.floor(Math.random() * (vi.length))]
 
-    await conn.relayMessage(m.chat, { viewOnceMessage: { message } }, {});
-    m.react('📚') 
+                         let hi = `\n\n\t\t _السلام عليكم يا ${name}_ \t\t\n\n`
+
+    const totag = { contextInfo: { mentionedJid: [text] }}
+
+    let mtag = text + totag
+
+let ppl = await( await conn.profilePictureUrl(m.sender, 'image').catch(() => 'https://telegra.ph/file/24fa902ead26340f3df2c.png'))
+
+    let ppb = await( await conn.profilePictureUrl(conn.user.jid, 'image').catch(() => 'https://telegra.ph/file/24fa902ead26340f3df2c.png'))
+    
+    await m.reply('_جاري التحميل．．．_')
+ await conn.relayMessage(m.chat, { reactionMessage: { key: m.key, text: '✅'  }}, { messageId: m.key.id })
+
+//Payment Menu
+ /*await conn.relayMessage(m.chat,  {
+    requestPaymentMessage: {
+      currencyCodeIso4217: 'USD',
+      amount1000: 50000000,
+      requestFrom: m.sender,
+      noteMessage: {
+      extendedTextMessage: {
+      text: text.trim(),
+      contextInfo: {
+      externalAdReply: {
+      showAdAttribution: true
+      }}}}}}, {})*/
+ //let fkon = { key: { fromMe: false, participant: `${m.sender.split`@`[0]}@s.whatsapp.net`, ...(m.chat ? { remoteJid: '16504228206@s.whatsapp.net' } : {}) }, message: { contactMessage: { displayName: `${name}`, vcard: `BEGIN:VCARD\nVERSION:3.0\nN:;a,;;;\nFN:${name}\nitem1.TEL;waid=${m.sender.split('@')[0]}:${m.sender.split('@')[0]}\nitem1.X-ABLabel:Ponsel\nEND:VCARD`}}}
+//let fotonya = 'https://telegra.ph/file/d43f196dc3417ca4c5338.jpg'
+// conn.sendMessage(m.chat, { image: { url: fotonya  }, caption: text.trim()}, { quoted: fkon })
+      await conn.sendMessage(m.chat, { text: text.trim(), contextInfo: { externalAdReply: { title: conn.user.name, body: '', thumbnailUrl: ppb, sourceUrl: "https://whatsapp.com/channel/0029Va4gIsn3WHTcFh97VU3s", mediaType: 1, renderLargerThumbnail: true }}})
   } catch (e) {
-    conn.reply(m.chat, 'An error occurred', m)
-    throw e
+    m.reply('An error occurred')
+    m.reply(e)
   }
 }
-handler.command = ['menu'] 
+handler.command = /^(menu|help|\?)$/i
+handler.exp = 3
+
 export default handler
 
 const more = String.fromCharCode(8206)
@@ -138,4 +166,4 @@ function clockString(ms) {
   let m = isNaN(ms) ? '--' : Math.floor(ms / 60000) % 60
   let s = isNaN(ms) ? '--' : Math.floor(ms / 1000) % 60
   return [h, m, s].map(v => v.toString().padStart(2, 0)).join(':')
-  }
+				 }
