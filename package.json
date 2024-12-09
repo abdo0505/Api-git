@@ -26,7 +26,7 @@
 "url": "https://github.com/elrebelde21/LoliBot-MD/issues" },
 "license": "GPL-3.0-or-later",
 "dependencies": {
-"@adiwajshing/baileys": "github:rulldev/BailysV2",
+"@adiwajshing/baileys": "github:whiskeysockets/baileys",
 "@adiwajshing/keyed-db": "^0.2.4",
 "@bochilteam/scraper": "^4.2.4",
 "@brandond/findthelyrics": "^2.0.5",
