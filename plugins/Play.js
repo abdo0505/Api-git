@@ -1,86 +1,38 @@
-import yts from 'yt-search'
-import fs from 'fs'
-import os from 'os'
-import fetch from 'node-fetch'
-import { youtubedl } from '../lib/youtube.js'
+import fs from 'fs';
+import acrcloud from 'acrcloud';
 
-var handler = async (m, { conn, command, text, usedPrefix }) => {
-  if (!text) throw `مثال ${usedPrefix}${command} automovito mamgos`;
+let acr = new acrcloud({
+  host: 'identify-eu-west-1.acrcloud.com',
+  access_key: 'c33c767d683f78bd17d4bd4991955d81',
+  access_secret: 'bvgaIAEtADBTbLwiPGYlxupWqkNGIjT7J9Ag2vIu',
+});
 
-  let search = await yts(text);
-  let vid = search.videos[Math.floor(Math.random() * search.videos.length)];
-  if (!vid) throw 'Video Not Found, Try Another Title';
-  let { title, thumbnail, timestamp, views, ago, url } = vid;
+let handler = async m => {
+  let q = m.quoted ? m.quoted : m;
+  let mime = (q.msg || q).mimetype || '';
+  if (/audio|video/.test(mime)) {
+    let media = await q.download();
+    let ext = mime.split('/')[1];
+    fs.writeFileSync(`./tmp/${m.sender}.${ext}`, media);
+    let res = await acr.identify(fs.readFileSync(`./tmp/${m.sender}.${ext}`));
+    let { code, msg } = res.status;
+    if (code !== 0) throw msg;
+    let { title, artists, album, genres, release_date } = res.metadata.music[0];
+    let txt = `
+النتيجة
+• 👾 *العنوان*: ${title}
+• 👀 *الفنان*: ${artists !== undefined ? artists.map(v => v.name).join(', ') : 'لم يتم العثور عليه'}
+• ⏳ *الألبوم*: ${album.name || 'لم يتم العثور عليه'}
+• ⛈️ *النوع*: ${genres !== undefined ? genres.map(v => v.name).join(', ') : 'لم يتم العثور عليه'}
+• 📆 *تاريخ الإصدار*: ${release_date || 'لم يتم العثور عليه'}
+    `.trim();
+    fs.unlinkSync(`./tmp/${m.sender}.${ext}`);
+    m.reply(txt);
+  } else throw '*اسم الاغنية غير صحيح*';
+};
 
-  conn.sendMessage(m.chat, { image: { url: thumbnail }, caption: 'Please wait...' }, { quoted: m });
+handler.help = ['play'];
+handler.tags = ['downloader'];
+handler.command = /^play$/i;
 
-  // Get video details and download link
-  const { result, resultUrl } = await youtubedl(url);
-  const audioInfo = resultUrl.audio.find(a => a.quality === '128kbps') || resultUrl.audio[0];
-
-  // Fetch the download URL
-  const downloadUrl = await audioInfo.download();
-
-  // Get the path to the system's temporary directory
-  const tmpDir = os.tmpdir();
-  const filePath = `${tmpDir}/${title}.mp3`;
-
-  // Create writable stream in the temporary directory
-  const writableStream = fs.createWriteStream(filePath);
-
-  // Download audio
-  const response = await fetch(downloadUrl);
-  if (!response.ok) throw new Error(`Failed to download audio: ${response.statusText}`);
-
-  // Pipe the response into the writable stream
-  response.body.pipe(writableStream);
-
-  writableStream.on('finish', async () => {
-    let doc = {
-      audio: {
-        url: filePath
-      },
-      mimetype: 'audio/mp4',
-      fileName: title,
-      contextInfo: {
-        externalAdReply: {
-          showAdAttribution: true,
-          mediaType: 2,
-          mediaUrl: url,
-          title: title,
-          body: 'Audio Download',
-          sourceUrl: url,
-          thumbnail: await (await conn.getFile(thumbnail)).data
-        }
-      }
-    };
-
-    await conn.sendMessage(m.chat, doc, { quoted: m }).then(() => {
-      // Delete the audio file after sending
-      fs.unlink(filePath, (err) => {
-        if (err) {
-          console.error(`Failed to delete audio file: ${err}`);
-        } else {
-          console.log(`Deleted audio file: ${filePath}`);
-        }
-      });
-    }).catch((err) => {
-      console.error(`Failed to send message: ${err}`);
-    });
-  });
-
-  writableStream.on('error', (err) => {
-    console.error(`Failed to write audio file: ${err}`);
-    m.reply('Failed to download audio');
-  });
-}
-
-handler.help = ['play'].map((v) => v + ' <query>')
-handler.tags = ['downloader']
-handler.command = /^(play)$/i
-
-handler.limit = 8
-handler.register = true
-handler.disable = false
-
-export default handler
+export default handler;
